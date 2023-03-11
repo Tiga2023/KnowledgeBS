@@ -36,13 +36,98 @@ model1.compile(loss='binary_crossentropy',
                optimizer=tf.keras.optimizers.Adam(learning_rate=0.0001),
                metrics=['acc'])
 
+def upload_video():
+    st.write("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Object Detection in Videos</title>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+            <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+            <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+            <script>
+                $(document).ready(function() {
+                    $('#upload_form').submit(function(event) {
+                        var video_file = $('#video_file').val();
+                        var search_query = $('#search_query').val();
+
+                        if (video_file == '') {
+                            alert('Please select a video file to upload');
+                            event.preventDefault();
+                        }
+
+                        if (search_query == '') {
+                            alert('Please enter a search query');
+                            event.preventDefault();
+                        }
+                    });
+                });
+            </script>
+        </head>
+        <body>
+            <div class="container mt-5">
+                <h1 class="mb-3">Object Detection in Videos</h1>
+                <form id="upload_form" method="post" enctype="multipart/form-data" action="{{ url_for('upload_video') }}">
+                    <div class="form-group">
+                        <label for="video_file">Upload a video file:</label>
+                        <input type="file" class="form-control-file" id="video_file" name="video_file">
+                    </div>
+                    <div class="form-group">
+                        <label for="search_query">Search for objects:</label>
+                        <input type="text" class="form-control" id="search_query" name="search_query" placeholder="Enter a search query">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </body>
+        </html>
+    """)
 # Create the 'uploads' directory if it doesn't exist
 if not os.path.exists('uploads'):
     os.mkdir('uploads')
 
 # Set the path to the 'uploads' directory
 UPLOAD_FOLDER = os.path.join(os.getcwd(), 'uploads')
-
+def show_results(results):
+    st.write("""
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Object Detection Results</title>
+            <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+        </head>
+        <body>
+            <div class="container mt-5">
+                <h1 class="mb-3">Object Detection Results</h1>
+                {% if results %}
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Frame</th>
+                                <th>Object</th>
+                                <th>Probability</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for result in results %}
+                                {% for prediction in result %}
+                                    <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ prediction[1] }}</td>
+                                        <td>{{ prediction[2]|round(2) }}</td>
+                                    </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p>No objects found.</p>
+                {% endif %}
+            </div>
+        </body>
+        </html>
+    """, results=results)
 @st.cache(allow_output_mutation=True)
 def load_model():
     # Load the pre-trained Inception V3 model
@@ -137,7 +222,13 @@ def app():
                 st.write('---')
 
 if __name__ == '__main__':
+    upload_video()
     app()
+    # Load the object detection results from a file
+    results = load_results_from_file("results.txt")
+
+    # Display the results page
+    show_results(results)
 
 
 
