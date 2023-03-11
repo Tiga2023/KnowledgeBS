@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[1]:
-
 
 import tensorflow as tf
 from tensorflow.keras.applications.inception_v3 import InceptionV3, preprocess_input
@@ -14,15 +12,9 @@ model = InceptionV3(weights='imagenet')
 graph = tf.compat.v1.get_default_graph()
 
 
-# In[41]:
-
-
 # freezing the weights of the model
 for layer in model.layers:
     layer.trainable = False
-
-
-# In[30]:
 
 
 import glob
@@ -40,15 +32,6 @@ import random
 import warnings
 
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
-
-# In[2]:
-
-
-get_ipython().system('pip install opencv-python')
-
-
-# In[42]:
 
 
 # last layer for feature extraction
