@@ -3,6 +3,10 @@
 # Exit early on errors
 set -eu
 
+# Install system-level dependencies
+RUN apt-get update && \
+    apt-get install -y libgl1-mesa-glx
+    
 # Python buffers stdout. Without this, you won't see what you "print" in the Activity Logs
 export PYTHONUNBUFFERED=true
 
