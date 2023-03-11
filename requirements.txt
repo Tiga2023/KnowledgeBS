@@ -1,12 +1,9 @@
---upgrade pip
 flask
 numpy
 tensorflow
 keras
-pathlib
-shutil
-random
-warnings
+streamlit
 glob
 opencv-python
 os
+pip
