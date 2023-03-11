@@ -3,6 +3,5 @@ numpy
 tensorflow
 keras
 streamlit
-glob
 opencv-python
 pip
